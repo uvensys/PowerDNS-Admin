@@ -22,7 +22,6 @@ help:
 .DEFAULT_GOAL := all
 
 build:
-	    @cp yarn.lock requirements.txt docker
 	    @docker build --pull --build-arg ALP_VER=${alpver} -t ${IMAGEFULLNAME} -f docker/Dockerfile .
 
 push:
