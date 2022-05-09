@@ -1,7 +1,7 @@
 version: "3"
 
 services:
-  app:
+  powerdns:
     image: ngoduykhanh/powerdns-admin:latest
     depends_on: 
       - mysql
@@ -24,3 +24,20 @@ services:
       environment:
         - "MYSQL_DATABASE=pda"
         - "MYSQL_ALLOW_EMPTY_PASSWORD=yes"
+  phpmyadmin:
+      image: phpmyadmin/phpmyadmin
+      ports:
+          - "8080:80"
+      environment:
+          - "PMA_HOST=mysql"
+          - "PMA_USER=root"
+          - "PMA_PASSWORD="
+  nginx:
+      image: nginx:1.18-alpine
+      container_name: nginx
+      restart: unless-stopped
+      ports:
+          - 80:80
+      volumes:
+          - ./docker/nginx:/etc/nginx/conf.d
+      
