@@ -1,8 +1,10 @@
 version: "3"
 
 services:
-  app:
+  powerdns:
     image: ngoduykhanh/powerdns-admin:latest
+    depends_on: 
+      - mysql
     container_name: powerdns_admin
     ports:
       - "9191:80"
@@ -11,8 +13,31 @@ services:
       options:
         max-size: 50m
     environment:
-      - SQLALCHEMY_DATABASE_URI=mysql://pda:changeme@host.docker.internal/pda
+      - SQLALCHEMY_DATABASE_URI=mysql://root:@mysql/pda
       - GUNICORN_TIMEOUT=60
       - GUNICORN_WORKERS=2
       - GUNICORN_LOGLEVEL=DEBUG
       - OFFLINE_MODE=False # True for offline, False for external resources
+  mysql:
+      image: mysql:5.7
+      container_name: mysql
+      environment:
+        - "MYSQL_DATABASE=pda"
+        - "MYSQL_ALLOW_EMPTY_PASSWORD=yes"
+  phpmyadmin:
+      image: phpmyadmin/phpmyadmin
+      ports:
+          - "8080:80"
+      environment:
+          - "PMA_HOST=mysql"
+          - "PMA_USER=root"
+          - "PMA_PASSWORD="
+  nginx:
+      image: nginx:1.18-alpine
+      container_name: nginx
+      restart: unless-stopped
+      ports:
+          - 80:80
+      volumes:
+          - ./docker/nginx:/etc/nginx/conf.d
+      
